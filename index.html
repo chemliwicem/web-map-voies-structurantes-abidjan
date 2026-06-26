@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="./resources/ol.css">
+        <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+        <link rel="stylesheet" type="text/css" href="resources/horsey.min.css">
+        <link rel="stylesheet" type="text/css" href="resources/ol-search-layer.min.css">
+        <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+        <link rel="stylesheet" href="./resources/qgis2web.css">
+        <link rel="stylesheet" href="./pfe-custom.css">
+        <style>
+        html, body {
+            background-color: #071b33;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .ol-control > * {
+            background-color: #f8f8f8!important;
+            color: #444444!important;
+            border-radius: 0px;
+        }
+        .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
+            color: #444444!important;
+        }
+        .search-layer-input-search {
+            background-color: #f8f8f8!important;
+        }
+        .ol-control > *:focus, .ol-control >*:hover {
+            background-color: rgba(248, 248, 248, 0.7)!important;
+        } 
+        .ol-control {
+            background-color: rgba(255,255,255,.4) !important;
+            padding: 2px !important;
+        } 
+        </style>
+
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Voies structurantes du Grand Abidjan - PFE CHEMLI Wicem</title>
+    </head>
+    <body>
+        <section id="home-screen" class="home-screen">
+            <div class="home-card">
+                <div class="institution-row">
+                    <img class="header-logo" src="./images/LOGO_UTM.png" alt="Logo Université de Tunis El Manar">
+                    <div>
+                        <h2>Ministère de l'Enseignement supérieur et de la Recherche</h2>
+                        <h3>Faculté des sciences de Tunis</h3>
+                        <p>Département : Géologie</p>
+                    </div>
+                    <img class="header-logo fst-logo" src="./images/LOGO_FST.png" alt="Logo Faculté des Sciences de Tunis">
+                </div>
+
+                <div class="home-main-grid">
+                    <div class="memoire-block">
+                        <p class="eyebrow">Mémoire</p>
+                        <p>Présenté en vue de l’obtention du diplôme de Mastère professionnel en Sciences Géomatiques</p>
+                        <p>Parcours : <strong>TOPOGRAPHIE ET PROJETS TERRITORIAUX</strong></p>
+                        <p class="student-label">Élaboré par :</p>
+                        <h1>CHEMLI WICEM</h1>
+                        <p class="subject-label">Intitulé</p>
+                        <h4>Web Mapping informatif des voies structurantes du Grand Abidjan</h4>
+                    </div>
+
+                    <figure class="interchange-figure">
+                        <img src="./images/carte_voies_strucrantes.png" alt="Carte des voies structurantes du Grand Abidjan">
+                        <figcaption>Voies structurantes à aménager au Grand Abidjan</figcaption>
+                    </figure>
+                </div>
+
+                <div class="project-description">
+                    <h3>Contexte du projet</h3>
+                    <p>Le Projet de Transport Urbain d'Abidjan (PTUA) – Phase 2 prévoit l'aménagement de près de 89 km de voies structurantes afin d'améliorer la mobilité dans le Grand Abidjan. Les travaux comprennent l'élargissement des axes routiers, la réalisation de 14 échangeurs et de plusieurs ouvrages d'art majeurs destinés à renforcer la fluidité du trafic, la connectivité entre les communes et le développement économique de l'agglomération.</p>
+                    <p>Cette application permet de visualiser la hiérarchisation des sections étudiées ainsi que les principales caractéristiques des aménagements proposés.</p>
+                </div>
+
+                <div class="supervision-grid">
+                    <div>
+                        <span>Organisme d’accueil</span>
+                        <strong>STUDI INTERNATIONAL</strong>
+                    </div>
+                    <div>
+                        <span>Encadré par</span>
+                        <p>M. CHAÂBENI ANIS : Encadrant académique</p>
+                        <p>M. BEN HMIDA ANIS : Encadrant professionnel</p>
+                    </div>
+                </div>
+
+                <div class="home-footer">
+                    <span>Année Universitaire 2025/2026</span>
+                    <button id="enter-map" type="button">Accéder à la carte interactive</button>
+                </div>
+            </div>
+        </section>
+
+        <div id="map-shell">
+        <div id="map-title" class="map-title">Carte interactive des voies structurantes à aménager au Grand Abidjan</div>
+        <div id="map">
+            <div id="popup" class="ol-popup">
+                <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                <div id="popup-content"></div>
+            </div>
+        </div>
+        <aside id="route-legend" class="route-legend" aria-label="Légende des voies structurantes">
+            <div class="legend-header">
+                <div>
+                    <h2>Voies structurantes</h2>
+                    <p>Cochez/décochez une voie pour l’afficher ou la masquer.</p>
+                </div>
+                <button id="legend-toggle" type="button" aria-label="Réduire la légende">−</button>
+            </div>
+            <div id="route-list"></div>
+        </aside>
+        </div>
+        <script src="resources/qgis2web_expressions.js"></script>
+<script src="resources/proj4.js"></script>
+        <script>proj4.defs('EPSG:32630','+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs');</script>
+        <script src="./resources/functions.js"></script>
+        <script src="./resources/ol.js"></script>
+        <script src="resources/horsey.min.js"></script>
+        <script src="resources/ol-search-layer.js"></script>
+        <script src="./resources/ol-layerswitcher.js"></script>
+        <script src="resources/photon-geocoder-autocomplete.min.js"></script>
+        <script src="layers/Coucherefactorise_1.js"></script>
+        <script src="styles/Coucherefactorise_1_style.js"></script>
+        <script src="./layers/layers.js" type="text/javascript"></script> 
+        <script src="./resources/Autolinker.min.js"></script>
+        <script src="./resources/qgis2web.js"></script>
+        <script src="./pfe-custom.js"></script>        
+    </body>
+</html>

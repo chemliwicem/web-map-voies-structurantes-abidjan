@@ -1,0 +1,130 @@
+(function () {
+    var voies = [
+        { name: 'Voie du Port (VDP)', label: 'Voie du Port (VDP)', color: 'rgba(34,176,53,1)' },
+        { name: 'Voie Express de Jacqueville', label: 'Voie Express de Jacqueville', color: 'rgba(60,231,71,1)' },
+        { name: 'Contournement de Bingerville', label: 'Contournement de Bingerville', color: 'rgba(229,235,29,1)' },
+        { name: 'Ancienne Y4', label: 'Ancienne Y4', color: 'rgba(229,235,29,1)' },
+        { name: 'Boulevard de France Redressé', label: 'Boulevard de France Redressé', color: 'rgba(237,140,10,1)' },
+        { name: 'Liaison Échangeur Akwaba - Bd Aéroport', label: 'Liaison Échangeur Akwaba - Bd Aéroport', color: 'rgba(248,2,5,1)' }
+    ];
+
+    var activeVoies = new Set(voies.map(function (voie) { return voie.name; }));
+
+    function closePopupIfPossible() {
+        var popup = document.getElementById('popup');
+        if (popup) popup.style.display = 'none';
+        if (typeof collection !== 'undefined' && collection.clear) collection.clear();
+    }
+
+    function setupHomeScreen() {
+        var home = document.getElementById('home-screen');
+        var button = document.getElementById('enter-map');
+        if (!home || !button) return;
+
+        button.addEventListener('click', function () {
+            home.classList.add('hidden');
+            setTimeout(function () {
+                home.style.display = 'none';
+                if (typeof map !== 'undefined') map.updateSize();
+            }, 460);
+        });
+    }
+
+    function setupVoiesLayer() {
+        if (typeof lyr_Coucherefactorise_1 === 'undefined') return;
+
+        var originalStyle = lyr_Coucherefactorise_1.getStyle();
+        lyr_Coucherefactorise_1.setVisible(true);
+        lyr_Coucherefactorise_1.set('interactive', true);
+        lyr_Coucherefactorise_1.set('popuplayertitle', 'Voies structurantes');
+        lyr_Coucherefactorise_1.set('fieldAliases', {
+            'tessellate': 'tessellate',
+            'Section N°': 'Section N°',
+            'Nom de la section': 'Nom de la section',
+            'Nom de la Voie': 'Nom de la voie',
+            'Priorite': 'Priorité',
+            'Longueur de la voie (m)': 'Longueur de la voie (m)',
+            'Score AHP': 'Score AHP',
+            'Taux de rentabilité en %': 'Taux de rentabilité en %'
+        });
+        lyr_Coucherefactorise_1.setStyle(function (feature, resolution) {
+            var voie = String(feature.get('Nom de la Voie'));
+            if (!activeVoies.has(voie)) return null;
+            return typeof originalStyle === 'function' ? originalStyle(feature, resolution) : originalStyle;
+        });
+        lyr_Coucherefactorise_1.changed();
+
+        if (typeof doHover !== 'undefined') doHover = false;
+        if (typeof preDoHover !== 'undefined') preDoHover = false;
+    }
+
+    function setupLegend() {
+        var list = document.getElementById('route-list');
+        if (!list) return;
+
+        voies.forEach(function (voie) {
+            var label = document.createElement('label');
+            label.className = 'route-item';
+
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = voie.name;
+            checkbox.checked = true;
+
+            var swatch = document.createElement('span');
+            swatch.className = 'route-swatch';
+            swatch.style.background = voie.color;
+
+            var text = document.createElement('span');
+            text.className = 'route-label';
+            text.textContent = voie.label;
+
+            checkbox.addEventListener('change', function () {
+                if (checkbox.checked) activeVoies.add(voie.name);
+                else activeVoies.delete(voie.name);
+                closePopupIfPossible();
+                if (typeof lyr_Coucherefactorise_1 !== 'undefined') lyr_Coucherefactorise_1.changed();
+            });
+
+            label.appendChild(checkbox);
+            label.appendChild(swatch);
+            label.appendChild(text);
+            list.appendChild(label);
+        });
+
+        var legend = document.getElementById('route-legend');
+        var toggle = document.getElementById('legend-toggle');
+        if (legend && toggle) {
+            toggle.addEventListener('click', function () {
+                legend.classList.toggle('collapsed');
+                toggle.textContent = legend.classList.contains('collapsed') ? '+' : '−';
+            });
+        }
+    }
+
+    function patchFeaturePicking() {
+        if (typeof map === 'undefined' || typeof lyr_Coucherefactorise_1 === 'undefined') return;
+
+        map.on('singleclick', function (evt) {
+            var visibleVoieFound = false;
+            map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+                if (layer === lyr_Coucherefactorise_1 && activeVoies.has(String(feature.get('Nom de la Voie')))) {
+                    visibleVoieFound = true;
+                }
+            }, {
+                layerFilter: function (layer) {
+                    return layer === lyr_Coucherefactorise_1;
+                }
+            });
+
+            if (!visibleVoieFound) closePopupIfPossible();
+        });
+    }
+
+    window.addEventListener('load', function () {
+        setupHomeScreen();
+        setupVoiesLayer();
+        setupLegend();
+        patchFeaturePicking();
+    });
+})();
