@@ -1,11 +1,11 @@
 (function () {
     var voies = [
-        { name: 'Voie du Port (VDP)', label: 'Voie du Port (VDP)', color: 'rgba(34,176,53,1)' },
-        { name: 'Voie Express de Jacqueville', label: 'Voie Express de Jacqueville', color: 'rgba(60,231,71,1)' },
-        { name: 'Contournement de Bingerville', label: 'Contournement de Bingerville', color: 'rgba(229,235,29,1)' },
+        { name: 'Voie du Port (VDP)', label: 'Voie du Port (VDP)', color: 'rgba(229,235,29,1)' },
+        { name: 'Voie Express de Jacqueville', label: 'Voie Express de Jacqueville', color: 'rgba(237,140,10,1)' },
+        { name: 'Contournement de Bingerville', label: 'Contournement de Bingerville', color: 'rgba(60,231,71,1)' },
         { name: 'Ancienne Y4', label: 'Ancienne Y4', color: 'rgba(229,235,29,1)' },
-        { name: 'Boulevard de France Redressé', label: 'Boulevard de France Redressé', color: 'rgba(237,140,10,1)' },
-        { name: 'Liaison Échangeur Akwaba - Bd Aéroport', label: 'Liaison Échangeur Akwaba - Bd Aéroport', color: 'rgba(248,2,5,1)' }
+        { name: 'Boulevard de France Redressé', label: 'Boulevard de France Redressé', color: 'rgba(248,2,5,1)' },
+        { name: 'Liaison Échangeur Akwaba - Bd Aéroport', label: 'Liaison Échangeur Akwaba - Bd Aéroport', color: 'rgba(237,140,10,1)' }
     ];
 
     var activeVoies = new Set(voies.map(function (voie) { return voie.name; }));

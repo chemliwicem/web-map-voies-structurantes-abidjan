@@ -27,12 +27,10 @@ var lyr_Coucherefactorise_1 = new ol.layer.Vector({
                 popuplayertitle: 'Couche refactorisée',
                 interactive: true,
     title: 'Couche refactorisée<br />\
-    <img src="styles/legend/Coucherefactorise_1_0.png" /> Faible<br />\
+    <img src="styles/legend/Coucherefactorise_1_4.png" /> Très Haute<br />\
     <img src="styles/legend/Coucherefactorise_1_1.png" /> Haute<br />\
     <img src="styles/legend/Coucherefactorise_1_2.png" /> Moyenne<br />\
-    <img src="styles/legend/Coucherefactorise_1_3.png" /> Très Faible<br />\
-    <img src="styles/legend/Coucherefactorise_1_4.png" /> Très Haute<br />\
-    <img src="styles/legend/Coucherefactorise_1_5.png" /> <br />' });
+    <img src="styles/legend/Coucherefactorise_1_0.png" /> Faible<br />' });
 
 lyr_OpenStreetMap_0.setVisible(true);lyr_Coucherefactorise_1.setVisible(true);
 var layersList = [lyr_OpenStreetMap_0,lyr_Coucherefactorise_1];
