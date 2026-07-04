@@ -16,10 +16,93 @@
         if (typeof collection !== 'undefined' && collection.clear) collection.clear();
     }
 
+    function getFeatureValue(feature, keys) {
+        for (var i = 0; i < keys.length; i++) {
+            var value = feature.get(keys[i]);
+            if (value !== undefined && value !== null) return value;
+        }
+        return '';
+    }
+
+    function buildAttributeTable(feature) {
+        var keys = [
+            'Section NÂ°',
+            'Section N°',
+            'Nom de la section',
+            'Nom de la Voie',
+            'Priorite',
+            'Longueur de la voie (m)',
+            'Score AHP',
+            'Taux de rentabilitÃ© en %',
+            'Taux de rentabilité en %'
+        ];
+        var labels = {
+            'Section NÂ°': 'Section N°',
+            'Section N°': 'Section N°',
+            'Nom de la section': 'Nom de la section',
+            'Nom de la Voie': 'Nom de la voie',
+            'Priorite': 'Priorité',
+            'Longueur de la voie (m)': 'Longueur de la voie (m)',
+            'Score AHP': 'Score AHP',
+            'Taux de rentabilitÃ© en %': 'Taux de rentabilité en %',
+            'Taux de rentabilité en %': 'Taux de rentabilité en %'
+        };
+        var rows = keys.map(function (key) {
+            var value = feature.get(key);
+            if (value === undefined || value === null || value === '') return '';
+            return '<tr><th>' + labels[key] + '</th><td>' + String(value) + '</td></tr>';
+        }).join('');
+
+        return '<div class="section-action-card section-attributes">' +
+            '<h3>Détails de la section - Section 1</h3>' +
+            '<table>' + rows + '</table>' +
+            '<button type="button" class="section-action-secondary" data-section-actions>Retour aux options</button>' +
+            '</div>';
+    }
+
+    function showSectionActions(feature, coordinate) {
+        var title = getFeatureValue(feature, ['Nom de la section']) || 'Section 1';
+        var popup = document.getElementById('popup');
+        var content = document.getElementById('popup-content');
+        if (!popup || !content || typeof overlayPopup === 'undefined') return;
+
+        content.innerHTML = '<div class="section-action-card">' +
+            '<h3>' + title + '</h3>' +
+            '<p>Choisissez une action pour la Section 1.</p>' +
+            '<div class="section-action-buttons">' +
+            '<button type="button" data-section-table>Détails de la section</button>' +
+            '<a href="file:///D:/PFE_MASTER_TPT/WEB_MAPING/PAGE_WEB_VOIES_STRUCTURANTES/qgis2web_2026_07_04-10_22_43_404100/index.html">Page Aménagement</a>' +
+            '</div>' +
+            '</div>';
+        popup.style.display = 'block';
+        overlayPopup.setPosition(coordinate);
+
+        var tableButton = content.querySelector('[data-section-table]');
+        if (tableButton) {
+            tableButton.addEventListener('click', function () {
+                content.innerHTML = buildAttributeTable(feature);
+                var backButton = content.querySelector('[data-section-actions]');
+                if (backButton) {
+                    backButton.addEventListener('click', function () {
+                        showSectionActions(feature, coordinate);
+                    });
+                }
+            });
+        }
+    }
+
     function setupHomeScreen() {
         var home = document.getElementById('home-screen');
         var button = document.getElementById('enter-map');
         if (!home || !button) return;
+
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('map') === '1' || window.location.hash === '#map') {
+            home.classList.add('hidden');
+            home.style.display = 'none';
+            if (typeof map !== 'undefined') setTimeout(function () { map.updateSize(); }, 80);
+            return;
+        }
 
         button.addEventListener('click', function () {
             home.classList.add('hidden');
@@ -106,10 +189,14 @@
         if (typeof map === 'undefined' || typeof lyr_Coucherefactorise_1 === 'undefined') return;
 
         map.on('singleclick', function (evt) {
+            var sectionOneFeature = null;
             var visibleVoieFound = false;
             map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                 if (layer === lyr_Coucherefactorise_1 && activeVoies.has(String(feature.get('Nom de la Voie')))) {
                     visibleVoieFound = true;
+                    var sectionValue = feature.get('Section NÂ°');
+                    if (sectionValue === undefined) sectionValue = feature.get('Section N°');
+                    if (String(sectionValue) === '1') sectionOneFeature = feature;
                 }
             }, {
                 layerFilter: function (layer) {
@@ -117,6 +204,11 @@
                 }
             });
 
+            if (sectionOneFeature) {
+                setTimeout(function () {
+                    showSectionActions(sectionOneFeature, evt.coordinate);
+                }, 0);
+            }
             if (!visibleVoieFound) closePopupIfPossible();
         });
     }

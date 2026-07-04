@@ -365,6 +365,56 @@ html, body {
 
 .ol-popup td { background: rgba(255, 255, 255, 0.06); }
 .ol-popup-closer:after { color: #ffffff; }
+
+.section-action-card h3 {
+    margin: 0 0 7px;
+    color: #ffffff;
+    font-size: 15px;
+}
+
+.section-action-card p {
+    margin: 0 0 10px;
+    color: #cfeaff;
+    font-size: 12px;
+}
+
+.section-action-buttons {
+    display: grid;
+    gap: 8px;
+}
+
+.section-action-buttons button,
+.section-action-buttons a,
+.section-action-secondary {
+    display: block;
+    width: 100%;
+    min-height: 35px;
+    padding: 9px 11px;
+    border: 0;
+    border-radius: 10px;
+    background: #0a4f88;
+    color: #ffffff !important;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.section-action-buttons button:hover,
+.section-action-buttons a:hover,
+.section-action-secondary:hover {
+    background: #0d67ad;
+}
+
+.section-action-secondary {
+    margin-top: 9px;
+}
+
+.section-attributes h3 {
+    margin-bottom: 9px;
+}
+
 .ol-control > * { border-radius: 10px !important; }
 
 #top-left-container .ol-control,
