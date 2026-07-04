@@ -71,7 +71,7 @@
             '<p>Choisissez une action pour la Section 1.</p>' +
             '<div class="section-action-buttons">' +
             '<button type="button" data-section-table>Détails de la section</button>' +
-            '<a href="file:///D:/PFE_MASTER_TPT/WEB_MAPING/PAGE_WEB_VOIES_STRUCTURANTES/qgis2web_2026_07_04-10_22_43_404100/index.html">Page Aménagement</a>' +
+            '<a href="./amenagement-section-1/index.html">Page Aménagement</a>' +
             '</div>' +
             '</div>';
         popup.style.display = 'block';
